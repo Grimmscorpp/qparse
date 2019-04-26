@@ -1,2 +1,2 @@
-# query-parser
-A lightweight URL query parsing utility
+# qparse
+A URL query parser and reserializer
