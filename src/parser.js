@@ -48,7 +48,26 @@ function deserialize(string) {
 
 }
 
+/**
+ * Extracts the query string (if any) from a URL.
+ *
+ * @param {string} url The URL
+ * @returns {string} The query string
+ */
+
+function extractFrom(url) {
+  const name = "[^=&#]+";
+  const value = "[^=&#]+";
+  const param = name + "=" + value;
+  const queryStringPattern = "\\?" + param + "(?:&" + param + ")*";
+
+  let match = new RegExp(queryStringPattern).exec(url);
+
+  return match && match[0] || "";
+}
+
 module.exports = {
   serialize,
-  deserialize
+  deserialize,
+  extractFrom
 };
