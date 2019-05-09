@@ -2,11 +2,14 @@ const percent = require("./percent");
 const type = require("./type");
 
 /**
- * Serializes a given object into a set of `&` separated `name=value` pairs.
- * @param {*} object The object to serialize
- * @param {string} [prefix] An optional prefix to prepend to the `names`
- * @returns {string} The object serialized
+ * Serializes an object into a query string.
+ *
+ * @param {*} object The object
+ * @param {string} [prefix] An optional prefix to prepend to the parameter names
+ * of the query string
+ * @returns {string} A query string
  */
+
 function serialize(object, prefix) {
   if (typeof prefix !== "string") {
     prefix = "";
@@ -44,8 +47,19 @@ function serialize(object, prefix) {
   return params.join("&");
 }
 
-function deserialize(string) {
+/**
+ * Deserializes a query string into an object.
+ *
+ * @param {string} queryString The query string
+ * @returns {*} An object
+ */
 
+function deserialize(queryString) {
+  if (!type.of(queryString).isString) {
+    return null;
+  }
+
+  // TODO: Continue the implementation here...
 }
 
 /**
