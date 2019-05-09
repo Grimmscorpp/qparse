@@ -49,5 +49,7 @@ class Type {
 }
 
 module.exports = {
-  of: (thing) => new Type(thing)
+  of(thing) {
+    return new Type(thing)
+  }
 }

@@ -11,7 +11,7 @@ const type = require("./type");
  */
 
 function serialize(object, prefix) {
-  if (typeof prefix !== "string") {
+  if (!type.of(prefix).isString) {
     prefix = "";
   }
 
@@ -44,7 +44,7 @@ function serialize(object, prefix) {
     }
   }
 
-  return params.join("&");
+  return params.length === 0 ? "?" + params.join("&") : "";
 }
 
 /**
@@ -54,12 +54,67 @@ function serialize(object, prefix) {
  * @returns {*} An object
  */
 
-function deserialize(queryString) {
-  if (!type.of(queryString).isString) {
-    return null;
+function deserialize(string) {
+  if (!type.of(string).isString) return null;
+
+  const queryString = extractQueryStringFrom(string);
+
+  if (queryString === "") return {};
+
+  const data = {};
+  const params = [];
+
+  for (const param of queryString.substring(1).split("&")) {
+    const paramName = param.split("=", 1)[0];
+    const paramValue = param.substring(paramName.length + 1);
+    params.push({
+      name: percent.decode(paramName),
+      value: percent.decode(paramValue)
+    });
   }
 
-  // TODO: Continue the implementation here...
+  params.sort((a, b) => a.name.localeCompare(b.name));
+
+  const validVarName = "[_a-zA-Z]\\w*";
+  const dotSeparatedVarsFinder = new RegExp("^" + validVarName + "(?:\\." + validVarName + ")+$");
+
+  for (const param of params) {
+    const paramName = param.name;
+    const paramValue = param.value;
+
+    let ptr = data;
+    let prop = paramName;
+
+    if (dotSeparatedVarsFinder.exec(paramName)) {
+      const components = paramName.split(".");
+      prop = components.pop();
+
+      for (const comp of components) {
+        if (!ptr.hasOwnProperty(comp)) {
+          ptr[comp] = {};
+
+        } else if (!type.of(ptr[comp]).isObject) {
+          ptr = data;
+          prop = paramName;
+          break;
+        }
+
+        ptr = ptr[comp];
+      }
+    }
+
+    if (!ptr.hasOwnProperty(prop)) {
+      ptr[prop] = paramValue;
+
+    } else if (!type.of(ptr[prop]).isArray) {
+      ptr[prop] = [ptr[prop], paramValue];
+
+    } else {
+      ptr[prop].push(paramValue);
+    }
+  }
+
+  return data;
 }
 
 /**
@@ -69,9 +124,9 @@ function deserialize(queryString) {
  * @returns {string} The query string
  */
 
-function extractFrom(url) {
-  const name = "[^=&#]+";
-  const value = "[^=&#]+";
+function extractQueryStringFrom(url) {
+  const name = "[^=&#]*";
+  const value = "[^&#]*";
   const param = name + "=" + value;
   const queryStringPattern = "\\?" + param + "(?:&" + param + ")*";
 
@@ -82,6 +137,5 @@ function extractFrom(url) {
 
 module.exports = {
   serialize,
-  deserialize,
-  extractFrom
+  deserialize
 };
