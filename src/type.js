@@ -32,7 +32,7 @@ class Type {
           var isNull = true;
 
         } else {
-          var isObjectNotArrayNotNull = true;
+          var isObject = true;
         }
         break;
       case "function":
@@ -49,7 +49,7 @@ class Type {
     this.isUndefined = isUndefined || false;
     this.isArray = isArray || false;
     this.isNull = isNull || false;
-    this.isObjectNotArrayNotNull = isObjectNotArrayNotNull || false;
+    this.isObject = isObject || false;
     this.isFunction = isFunction || false;
   }
 }
@@ -80,7 +80,6 @@ module.exports = {
    *
    * @returns {Type} The Type info
    */
-
   of(thing) {
     return new Type(thing)
   },
@@ -92,7 +91,6 @@ module.exports = {
    *
    * @returns {number|boolean|string} The string casted into a number or boolean
    */
-
   parsePrimitive(string) {
     return castIntoPrimitive(string);
   }

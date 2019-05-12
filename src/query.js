@@ -1,68 +1,102 @@
 const percent = require("./percent");
 const type = require("./type");
 
-function serialize(object) {
-  let addParamTo = (array, name, value) => {
-    let param = percent.encode(name);
+/**
+ * Represents a query string.
+ */
 
-    if (value !== null) {
-      if (type.of(value).isString) {
-        value = percent.encode(value);
-      }
-      param += "=" + value;
+class Query {
+  /**
+   * Creates a new object representing a query string.
+   *
+   * @param {string} [queryString=""] An optional query string to objectify
+   * @param {boolean} [parsePrimitives=true] When set to `true` or ommitted, attemps to parse primitive types from the supplied query string
+   */
+  constructor(queryString = "", parsePrimitives = true) {
+    /**
+     * Encapsulates the query string parameters.
+     */
+    this.data = queryString === "" ? {} : deserialize(queryString, parsePrimitives);
+  }
+
+  /**
+   * Returns `true` if the query does not have parameters.
+   */
+  get isEmpty() {
+    return isEmpty(this.data);
+  }
+
+  /**
+   * Returns `true` if the query contains the specified key.
+   *
+   * @param {string} key The key to check if exists
+   */
+  has(key) {
+    if (!this.data) return false;
+    return this.data[key] !== undefined;
+  }
+
+  /**
+   * Returns the query string.
+   */
+  toString() {
+    if (isEmpty(this.data)) return "";
+    return "?" + serialize(this.data);
+  }
+}
+
+function isEmpty(data) {
+  if (!data) return true;
+
+  for (let prop in data) {
+    if (data[prop] !== undefined) return false;
+  }
+
+  return true;
+}
+
+function serialize(object, nestingPrefix = "") {
+  let params = [];
+
+  for (let prop in object) {
+    let content = object[prop];
+
+    if (content === undefined) continue;
+
+    let name = nestingPrefix ? nestingPrefix + "." + prop : prop;
+    let contentType = type.of(content);
+
+    if (contentType.isObject) {
+      params.push(serialize(content, name));
+
+    } else if (!contentType.isArray) {
+      addParamTo(params, name, content);
+
+    } else for (let item of content) {
+      addParamTo(params, name, item);
     }
+  }
 
-    array.push(param);
-  };
+  return params.join("&");
+}
 
-  let serializeWithNestingPrefix = (nestingPrefix, object) => {
-    const params = [];
+function addParamTo(array, name, value) {
+  let param = percent.encode(name);
 
-    for (let prop in object) {
-      let content = object[prop];
-
-      if (content === undefined) continue;
-
-      let name = nestingPrefix ? nestingPrefix + "." + prop : prop;
-      const contentType = type.of(content);
-
-      if (contentType.isObjectNotArrayNotNull) {
-        params.push(serializeWithNestingPrefix(name, content));
-
-      } else if (!contentType.isArray) {
-        addParamTo(params, name, content);
-
-      } else for (let item of content) {
-        addParamTo(params, name, item);
-      }
+  if (value !== null) {
+    if (type.of(value).isString) {
+      value = percent.encode(value);
     }
+    param += "=" + value;
+  }
 
-    return params.join("&");
-  };
-
-  return serializeWithNestingPrefix("", object);
+  array.push(param);
 }
 
 function deserialize(url, parsePrimitives = false) {
   let data = {};
   let nestedNameDetector = /^[_a-z]\w*(?:\.[_a-z]\w*)+$/i;
   let nestedParams = [];
-
-  let addPropTo = (object, prop, value, parsePrimitives) => {
-    if (parsePrimitives) {
-      value = type.parsePrimitive(value);
-    }
-
-    if (!object.hasOwnProperty(prop)) {
-      object[prop] = value;
-
-    } else if (!type.of(object[prop]).isArray) {
-      object[prop] = [object[prop], value];
-
-    } else {
-      object[prop].push(value);
-    }
-  };
 
   parseQueryStringParametersFrom(url, (name, value) => {
     if (nestedNameDetector.exec(name)) {
@@ -85,7 +119,7 @@ function deserialize(url, parsePrimitives = false) {
         if (!ptr.hasOwnProperty(comp)) {
           ptr[comp] = {};
 
-        } else if (!type.of(ptr[comp]).isObjectNotArrayNotNull) {
+        } else if (!type.of(ptr[comp]).isObject) {
           ptr = data;
           prop = param.name;
           break;
@@ -121,31 +155,20 @@ function parseQueryStringParametersFrom(url, onParameterParsed) {
   }
 }
 
-module.exports = {
-  /**
-   * Turns an object into a query string.
-   *
-   * @param {*} object The object to serialize
-   *
-   * @returns {string} A query string generated from the object
-   */
-
-  serialize(object) {
-    return serialize(object);
-  },
-
-  /**
-   * Turns a query string into an object.
-   *
-   * @param {string} queryString The query string to deserialize
-   * @param {boolean} [parsePrimitives=false] When set to `true`, parses primitive types
-   *
-   * @returns {*} An object representing the query string
-   */
-
-  deserialize(queryString, parsePrimitives = false) {
-    if (!type.of(queryString).isString) return null;
-
-    return deserialize(queryString, parsePrimitives);
+function addPropTo(object, prop, value, parsePrimitives) {
+  if (parsePrimitives) {
+    value = type.parsePrimitive(value);
   }
-};
+
+  if (!object.hasOwnProperty(prop)) {
+    object[prop] = value;
+
+  } else if (!type.of(object[prop]).isArray) {
+    object[prop] = [object[prop], value];
+
+  } else {
+    object[prop].push(value);
+  }
+}
+
+module.exports = Query;
