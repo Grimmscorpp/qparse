@@ -10,7 +10,7 @@ class Query {
    * Creates a new object representing a query string.
    *
    * @param {string} [queryString=""] An optional query string to objectify
-   * @param {boolean} [parsePrimitives=true] When set to `true` or ommitted, attemps to parse primitive types from the supplied query string
+   * @param {boolean} [parsePrimitives=true] When ommitted or set to `true`, attemps to parse primitive types from the supplied query string
    */
   constructor(queryString = "", parsePrimitives = true) {
     /**
