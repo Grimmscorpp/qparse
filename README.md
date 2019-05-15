@@ -1,38 +1,59 @@
 # qparse
 
-`qparse` (pronounced "queue parse") is a **query string parser** and **generator** in JavaScript.
+`qparse` (pronounced "Q Parse") is a query string generator and parser in JavaScript.
 
 
-
-A query string is the part of a URL containing `&` separated key-value pairs.
 
 ```
-http//www.example.com/path/name?key1=value1&key2=value2&key3=value3#hash
-                                |_________________________________|
-                                           query string
+http://www.example.com/path/name?key1=value1&key2=value2&...&keyN=valueN#hash
+                                 |_____________________________________|
+                                              query string
 ```
 
 
 
-`qparse` **parses it out** of the URL, **breaks it down** to a JavaScript object and **joins the object** (after modifications) into a query string back again. Behind the scenes it handles all the *percent encoding/decoding* stuff for you.
+A query string, for the most part, is a collection of `&` separated `key=value` pairs. `qparse` turns it into an object and vice versa. Additionally:
 
-```javascript
-// node REPL
-
-const qp = require("qparse");
-
-qp.parse("example.com?hobbies=coding&hobbies=eating%20healthy%20food").data
-// Output: { hobbies: ["coding", "eating healthy food"] }
-
-qp.parse("?rect.length=30&rect.height=10").data
-// Output: { rect: { length: "30", height: "10" } }
-```
+1. Handles all the encoding/decoding
+2. Parses primitives (`number`, `boolean`) unless specified not to
+3. Creates nested objects wherever possible
 
 
 
 ## TL;DR
 
-Jump to:
+Here's a quick Node.js example.
+
+
+
+```javascript
+const qp = require("qparse");
+
+let query = qp.parse("example.com" +
+                     "?rect.width=30&rect.height=10" +
+                     "&rect.color=green&rect.fill=true");
+
+console.log(query.data);
+// Output:
+// { rect: { color: 'green', fill: true, height: 10, width: 30 } }
+
+query = qp.create({
+  customer: "John Doe",
+  cart: {
+    qty: 2,
+    items: ["item-1", "item-2"]
+  }
+});
+
+console.log("http://example.com" + query); // Calls query.toString()
+
+// Output:
+// http://example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
+```
+
+
+
+## Contents
 
 1. [Installation](#installation)
 2. [Sample Code](#sample-code)
