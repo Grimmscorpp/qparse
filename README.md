@@ -2,53 +2,64 @@
 
 `qparse` (pronounced "Q Parse") is a query string generator and parser in JavaScript.
 
-
-
 ```
-http://www.example.com/path/name?key1=value1&key2=value2&...&keyN=valueN#hash
-                                 |_____________________________________|
-                                              query string
+http://www.example.com/path/name?name1=value1&name2=value2&...&nameN=valueN#hash
+                                 |________________________________________|
+                                                query string
 ```
 
+A query string, for the most part, is a collection of '&' separated *name=value* pairs. `qparse` turns it into an object and vice versa. Additionally:
 
-
-A query string, for the most part, is a collection of `&` separated `key=value` pairs. `qparse` turns it into an object and vice versa. Additionally:
-
-1. Handles all the encoding/decoding
-2. Parses primitives (`number`, `boolean`) unless specified not to
-3. Creates nested objects wherever possible
-
-
+* Performs URL encoding/decoding where applicable
+* Creates nested hierarchies where possible
+* Parses primitive types (`number`, `boolean`) where permissible (unless specified not to)
 
 ## TL;DR
 
-Here's a quick Node.js example.
-
-
+Here's a quick, hypothetical Node.js starter.
 
 ```javascript
 const qp = require("qparse");
 
-let query = qp.parse("example.com" +
-                     "?rect.width=30&rect.height=10" +
-                     "&rect.color=green&rect.fill=true");
+let query = qp.parse("example.com?veg=Spinach&fruits=Apple&fruits=Banana");
 
 console.log(query.data);
-// Output:
-// { rect: { color: 'green', fill: true, height: 10, width: 30 } }
+// >>> { veg: 'Spinach', fruits: [ 'Apple', 'Banana' ] }
 
+// --------------------------------------------------------------------------------
+
+query = qp.parse("example.com" +
+                 "?rect.width=30&rect.height=10" +
+                 "&rect.color=green&rect.fill=true");
+
+let rect = query.data.rect;
+
+console.log(rect);
+// >>> { color: 'green', fill: true, height: 10, width: 30 }
+
+console.log(rect.fill === true);
+// >>> true
+
+console.log(rect.width * rect.height);
+// >>> 300
+
+// --------------------------------------------------------------------------------
+
+// Create a new query (object).
 query = qp.create({
-  customer: "John Doe",
-  cart: {
-    qty: 2,
-    items: ["item-1", "item-2"]
+  customer: "John Doe",         // Whitespaces will be encoded to '%20'
+  cart: {                       // Nested objects will have dot separated names
+    items: ["item-1", "item-2"] // Array values will share common names
+    qty: 2
   }
 });
 
-console.log("http://example.com" + query); // Calls query.toString()
+console.log("example.com" + query); // Calls query.toString()
+// >>> example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
 
-// Output:
-// http://example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
+query.data = {};
+console.log(query.isEmpty);
+// >>> true
 ```
 
 
