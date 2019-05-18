@@ -24,9 +24,9 @@ const qp = require("qparse");
 let query = qp.parse("example.com?veg=Spinach&fruits=Apple&fruits=Banana");
 
 console.log(query.data);
-// >>> { veg: 'Spinach', fruits: [ 'Apple', 'Banana' ] }
+// Prints: { veg: 'Spinach', fruits: [ 'Apple', 'Banana' ] }
 console.log(query.toString());
-// >>> ?veg=Spinach&fruits=Apple&fruits=Banana
+// Prints: ?veg=Spinach&fruits=Apple&fruits=Banana
 
 // -----------------------------------------------------------------------------
 
@@ -37,11 +37,11 @@ query = qp.parse("example.com" +
 let rect = query.data.rect;
 
 console.log(rect);
-// >>> { color: 'green', fill: true, height: 10, width: 30 }
+// Prints: { color: 'green', fill: true, height: 10, width: 30 }
 console.log(rect.fill === true);
-// >>> true
+// Prints: true
 console.log(rect.width * rect.height);
-// >>> 300
+// Prints: 300
 
 // -----------------------------------------------------------------------------
 
@@ -56,14 +56,14 @@ query = qp.create({
 });
 
 console.log("example.com" + query);
-// >>> example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
+// Prints: example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
 
 console.log(query.isEmpty);
-// >>> false
+// Prints: false
 
 query.data = {};
 console.log(query.isEmpty);
-// >>> true
+// Prints: true
 ```
 
 
