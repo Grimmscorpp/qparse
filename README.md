@@ -16,7 +16,7 @@ A query string, for the most part, is a collection of '&' separated *name=value*
 
 ## TL;DR
 
-Here's a hypothetical Node.js starter. The API works consistently in the browser.
+Here's a hypothetical Node.js starter. The API should work consistently in all major browsers.
 
 ```javascript
 const qp = require("qparse");
@@ -26,7 +26,7 @@ let query = qp.parse("example.com?veg=Spinach&fruits=Apple&fruits=Banana");
 console.log(query.data);
 // >>> { veg: 'Spinach', fruits: [ 'Apple', 'Banana' ] }
 
-// --------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 
 query = qp.parse("example.com" +
                  "?rect.width=30&rect.height=10" +
@@ -34,35 +34,28 @@ query = qp.parse("example.com" +
 
 let rect = query.data.rect;
 
-console.log(rect);
-// >>> { color: 'green', fill: true, height: 10, width: 30 }
+console.log(rect);                     // { color: 'green', fill: true, height: 10, width: 30 }
+console.log(rect.fill === true);       // true
+console.log(rect.width * rect.height); // 300
 
-console.log(rect.fill === true);
-// >>> true
+// ---------------------------------------------------------------------------------------------------------------------
 
-console.log(rect.width * rect.height);
-// >>> 300
+// Generate a new query string from an object. Parameters listed below:
 
-// --------------------------------------------------------------------------------
-
-// Create a new query (object).
 query = qp.create({
-  customer: "John Doe",         // ?customer=John%20Doe
+  customer: "John Doe",         // customer=John%20Doe
   cart: {
-    qty: 2,                     // &cart.qty=2
-    items: ["item-1", "item-2"] // &cart.items=item-1&cart.items=item-2
+    qty: 2,                     // cart.qty=2
+    items: ["item-1", "item-2"] // cart.items=item-1&cart.items=item-2
   }
 });
 
-console.log("example.com" + query);
-// >>> example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
+console.log("example.com" + query); // example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
 
-console.log(query.isEmpty);
-// >>> false
+console.log(query.isEmpty);         // false
 
 query.data = {};
-console.log(query.isEmpty);
-// >>> true
+console.log(query.isEmpty);         // true
 ```
 
 
