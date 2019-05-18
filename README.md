@@ -25,6 +25,8 @@ let query = qp.parse("example.com?veg=Spinach&fruits=Apple&fruits=Banana");
 
 console.log(query.data);
 // >>> { veg: 'Spinach', fruits: [ 'Apple', 'Banana' ] }
+console.log(query.toString());
+// >>> ?veg=Spinach&fruits=Apple&fruits=Banana
 
 // -----------------------------------------------------------------------------
 
