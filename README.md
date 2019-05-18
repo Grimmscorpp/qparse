@@ -1,6 +1,6 @@
 # qparse
 
-`qparse` (pronounced "Q Parse") is a query string generator and parser in JavaScript.
+`qparse` is a query string generator and parser in JavaScript.
 
 ```
 http://www.example.com/path/name?name1=value1&name2=value2&...&nameN=valueN#hash
@@ -8,15 +8,15 @@ http://www.example.com/path/name?name1=value1&name2=value2&...&nameN=valueN#hash
                                                 query string
 ```
 
-A query string, for the most part, is a collection of '&' separated *name=value* pairs. `qparse` turns it into an object and vice versa. Additionally:
+A query string, for the most part, is a collection of '&' separated *name=value* pairs. `qparse` turns it into an object and vice versa. In doing so:
 
 * Performs URL encoding/decoding where applicable
 * Creates nested hierarchies where possible
-* Parses primitive types (`number`, `boolean`) where permissible (unless specified not to)
+* Parses primitive types (`number`, `boolean`) where permissible (unless asked not to)
 
 ## TL;DR
 
-Here's a quick, hypothetical Node.js starter.
+Here's a hypothetical Node.js starter. The API works consistently in the browser.
 
 ```javascript
 const qp = require("qparse");
@@ -47,14 +47,17 @@ console.log(rect.width * rect.height);
 
 // Create a new query (object).
 query = qp.create({
-  customer: "John Doe",         // Whitespaces will be encoded to '%20'
-  cart: {                       // Nested objects will have dot separated names
-    items: ["item-1", "item-2"] // Array values will share common names
-    qty: 2
+  customer: "John Doe",         // ?customer=John%20Doe
+  cart: {
+    qty: 2,                     // &cart.qty=2
+    items: ["item-1", "item-2"] // &cart.items=item-1&cart.items=item-2
   }
 });
 
-console.log("example.com" + query); // Calls query.toString()
+console.log(query.isEmpty);
+// >>> false
+
+console.log("example.com" + query);
 // >>> example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
 
 query.data = {};
