@@ -54,11 +54,11 @@ query = qp.create({
   }
 });
 
-console.log(query.isEmpty);
-// >>> false
-
 console.log("example.com" + query);
 // >>> example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
+
+console.log(query.isEmpty);
+// >>> false
 
 query.data = {};
 console.log(query.isEmpty);
