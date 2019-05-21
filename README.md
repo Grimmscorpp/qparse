@@ -14,7 +14,7 @@ A query string, for the most part, is a collection of '&' separated *name=value*
 * Creates nested hierarchies where possible
 * Parses primitive types (`number`, `boolean`) where permissible (unless asked not to)
 
-Currently, `qparse` runs in **<u>Node.js</u>** and the **<u>browser</u>**.
+Currently, `qparse` runs in **Node.js** and the **browser**.
 
 ## TL;DR
 
@@ -27,17 +27,18 @@ const qp = require("qparse");
  * 1. Parse a query string from a URL into a new object (query):
  */
 
-let query = qp.parse("example.com/food?basket.veg=Carrot" +
-                                     "&basket.fruits=Apple" +
-                                     "&basket.fruits=Mango" +
-                                     "&basket.isBoring=true");
+let query = qp.parse("example.com/food-basket?veg=Carrot" +
+                                            "&fruits=Apple" +
+                                            "&fruits=Mango" +
+                                            "&isHealthy=true");
+let basket = query.data;
 
-let basket = query.data.basket;
-// The `basket` property is from the query string itself.
-
-console.log(basket.veg);      // > 'Carrot'
-console.log(basket.fruits);   // > [ 'Apple', 'Mango' ]
-console.log(basket.isBoring); // > true
+// String...
+console.log(basket.veg);       // > 'Carrot'
+// Array...
+console.log(basket.fruits);    // > [ 'Apple', 'Mango' ]
+// Boolean...
+console.log(basket.isHealthy); // > true
 
 // *****************************************************************************
 
@@ -47,7 +48,7 @@ console.log(basket.isBoring); // > true
 
 query = qp.create({
   customer: "John Doe",         // customer=John%20Doe
-  cart: {                       //
+  cart: {
     qty: 2,                     // cart.qty=2
     items: ["item-1", "item-2"] // cart.items=item-1&cart.items=item-2
   }
