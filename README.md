@@ -14,56 +14,50 @@ A query string, for the most part, is a collection of '&' separated *name=value*
 * Creates nested hierarchies where possible
 * Parses primitive types (`number`, `boolean`) where permissible (unless asked not to)
 
+Currently, `qparse` runs in **<u>Node.js</u>** and the **<u>browser</u>**.
+
 ## TL;DR
 
-Here's a hypothetical Node.js starter. The API should work consistently in all major browsers.
+A Node.js demo:
 
 ```javascript
 const qp = require("qparse");
 
-let query = qp.parse("example.com?veg=Spinach&fruits=Apple&fruits=Banana");
+/*
+ * 1. Parse a query string from a URL into a new object (query):
+ */
 
-console.log(query.data);
-// Prints: { veg: 'Spinach', fruits: [ 'Apple', 'Banana' ] }
-console.log(query.toString());
-// Prints: ?veg=Spinach&fruits=Apple&fruits=Banana
+let query = qp.parse("example.com/food?basket.veg=Carrot" +
+                                     "&basket.fruits=Apple" +
+                                     "&basket.fruits=Mango" +
+                                     "&basket.isBoring=true");
 
-// -----------------------------------------------------------------------------
+let basket = query.data.basket;
 
-query = qp.parse("example.com" +
-                 "?rect.width=30&rect.height=10" +
-                 "&rect.color=green&rect.fill=true");
+console.log(basket.veg);      // > 'Carrot'
+console.log(basket.fruits);   // > [ 'Apple', 'Mango' ]
+console.log(basket.isBoring); // > true
 
-let rect = query.data.rect;
+// *****************************************************************************
 
-console.log(rect);
-// Prints: { color: 'green', fill: true, height: 10, width: 30 }
-console.log(rect.fill === true);
-// Prints: true
-console.log(rect.width * rect.height);
-// Prints: 300
-
-// -----------------------------------------------------------------------------
-
-// Generate a new query string from an object. Parameters listed below:
+/*
+ * 2. Create a new query string represented by an object (query):
+ */
 
 query = qp.create({
   customer: "John Doe",         // customer=John%20Doe
-  cart: {
+  cart: {                       //
     qty: 2,                     // cart.qty=2
     items: ["item-1", "item-2"] // cart.items=item-1&cart.items=item-2
   }
 });
 
 console.log("example.com" + query);
-// Prints: example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
+// > example.com?customer=John%20Doe&cart.qty=2&cart.items=item-1&cart.items=item-2
 
-console.log(query.isEmpty);
-// Prints: false
-
+console.log(query.isEmpty); // > false
 query.data = {};
-console.log(query.isEmpty);
-// Prints: true
+console.log(query.isEmpty); // > true
 ```
 
 
