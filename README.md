@@ -33,6 +33,7 @@ let query = qp.parse("example.com/food?basket.veg=Carrot" +
                                      "&basket.isBoring=true");
 
 let basket = query.data.basket;
+// The `basket` property is from the query string itself.
 
 console.log(basket.veg);      // > 'Carrot'
 console.log(basket.fruits);   // > [ 'Apple', 'Mango' ]
