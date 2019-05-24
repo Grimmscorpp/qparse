@@ -2,14 +2,14 @@
   "name": "qparse",
   "version": "1.0.0",
   "description": "A query string generator and parser in JavaScript.",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Grimmscorpp/qparse.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Md. Ikram Khan Fahim",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Grimmscorpp/qparse/issues"
   },
@@ -18,7 +18,7 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "babel-loader": "^8.0.6",
-    "webpack": "^4.32.1",
+    "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2"
   }
 }
